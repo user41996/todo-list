@@ -44,7 +44,21 @@ Vue.component('note-list',{
             <div class="for-begin">
 
                 <h2>Your tasks in begin:</h2>
-                
+                <div>
+                    <ul>
+                        <li v-for="note in forBegin"><p>{{note.name}}</p>
+                            <ul>
+                                <li v-for="task in note.points" v-if="task.name !== null"">
+
+                                <p >{{task.name}}</p>
+                                <input type="checkbox">
+
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
             </div>
 
             <div class="in-progress">
@@ -70,9 +84,10 @@ Vue.component('note-list',{
     methods:{
 
     },
-    mounted(){
-        eventBus.$on('onSubmit',note => {
-            this.forBegin.push(note);
+    mounted(){  //здесь при нажатии должно пушить в массив переменную, которую я перенёс из другого компонента
+        eventBus.$on('onSubmit',note => { //подписываемся на событие нажатия кнопки в форме
+            this.forBegin.push(note); //пушит, теперь надо вывести
+            console.log(this.forBegin);
         })
     }
 
@@ -158,6 +173,7 @@ Vue.component('create-task',{
                 this.thirdPoint = null;
                 this.forthPoint = null;
                 this.fifthPoint = null;
+                console.log(note);
             }
             //во всех других случаях...
             else{
