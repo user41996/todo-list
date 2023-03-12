@@ -46,11 +46,11 @@ Vue.component('note-list',{
                 <h2>Your tasks in begin:</h2>
                 <div>
                     <ul>
-                        <li v-for="note in forBegin"><p>{{note.name}}</p>
+                        <li v-for="note in forBegin" class="task-border"><p>Name of task: {{note.name}}</p><br>
                             <ul>
                                 <li v-for="task in note.points" v-if="task.name !== null"">
 
-                                <p >{{task.name}}</p>
+                                <p >Step: {{task.name}}</p>
                                 <input type="checkbox">
 
                                 </li>
@@ -86,8 +86,14 @@ Vue.component('note-list',{
     },
     mounted(){  //здесь при нажатии должно пушить в массив переменную, которую я перенёс из другого компонента
         eventBus.$on('onSubmit',note => { //подписываемся на событие нажатия кнопки в форме
-            this.forBegin.push(note); //пушит, теперь надо вывести
-            console.log(this.forBegin);
+            //this.forBegin.push(note); //пушит, теперь надо вывести
+            if(this.forBegin.length < 3){ //логика добавления в первый столбец
+                this.forBegin.push(note);//если в пером стобце меньше 3 карточек, тогда добавляем
+            }
+            else{
+                this.errors.push('Maximum number of cards!')//если пытаемся запушить 4 карточку, то она не добавляется и в ошибку добавляется сообщение о том, что в столбце максимальное количество карточек
+            }
+            //console.log(this.forBegin);
         })
     }
 
