@@ -2,13 +2,13 @@
     margin: 0;
     padding: 0;
 }
-/*  */
+/* стили для шапки */
 header{ 
     width: 100%;
     height: 50px;
     background-color: orangered;
 }
-/*  */
+/* стили для формы */
 form{
     margin-top: 25px;
     margin-left: 30%;
@@ -19,19 +19,19 @@ form{
     flex-direction: column;
     justify-content: space-between;
 }
-/*  */
-.submit{
+/* стили для кнопки */
+button{
     width: 150px;
     height: 30px;
     background-color: black;
     color: whitesmoke;
     border: 1px solid black;
 }
-/*  */
-.submit:active{
+/* стили для кнопки, когда на неё нажать */
+button:active{
     background-color: aqua;
 }
-/*  */
+/* стили для блока в котором лежат все колонки */
 .columns{
     width: 100%;
     display: flex;
@@ -39,14 +39,14 @@ form{
     justify-content: space-between;
     margin-top: 50px;
 }
-/*  */
+/* общие стили для всех 3 колонок */
 .for-begin,.in-progress,.final{
     border: 1px solid black;
     width: 33%;
     min-height: 200px;
     height: auto;
 }
-/*  */
+/* стили для карточки с заданиями(патенциально исчезнет) */
 .ticket{
     display: flex;
     flex-direction: column;
