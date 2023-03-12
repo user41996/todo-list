@@ -1,0 +1,58 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+/*  */
+header{ 
+    width: 100%;
+    height: 50px;
+    background-color: orangered;
+}
+/*  */
+form{
+    margin-top: 25px;
+    margin-left: 30%;
+    padding: 15px;
+    border: 1px solid black;
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+/*  */
+.submit{
+    width: 150px;
+    height: 30px;
+    background-color: black;
+    color: whitesmoke;
+    border: 1px solid black;
+}
+/*  */
+.submit:active{
+    background-color: aqua;
+}
+/*  */
+.columns{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 50px;
+}
+/*  */
+.for-begin,.in-progress,.final{
+    border: 1px solid black;
+    width: 33%;
+    min-height: 200px;
+    height: auto;
+}
+/*  */
+.ticket{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 200px;
+    height: auto;
+    padding: 15px;
+    border: 1px solid black;
+}

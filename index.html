@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ToDo-List</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script defer src="js/vue.js"></script>
+    <script defer src="js/main.js"></script>
+</head>
+<body>
+    <header></header>
+    <form class="create-task">
+
+            <span>
+                <label for="nameOfTask">Enter the name for your task:</label>
+                <input type="text" placeholder="Name of your task" required>
+            </span>
+            <br>
+            <span>
+                <label for="firstPoint">Enter the first point your task:</label>
+                <input type="text" placeholder="First point of your task" required>
+            </span>
+            <br>
+            <span>
+                <label for="secondPoint">Enter the second point your task:</label>
+                <input type="text" placeholder="Second point of your task" required>
+            </span>
+            <br>
+            <span>
+                <label for="thirdPoint">Enter the third point your task:</label>
+                <input type="text" placeholder="Third point of your task" required>
+            </span>
+            <br>
+            <span>
+                <label for="forthPoint">Enter the forth point your task:</label>
+                <input type="text" placeholder="Fourth point of your task">
+            </span>
+            <br>
+            <span>
+                <label for="fifthPoint">Enter the fifth point your task:</label>
+                <input type="text" placeholder="Fifth point of your task">
+            </span>
+            <br>
+            <input type="submit" value="Submit" class="submit">
+
+        </form>
+
+        <div class="ticket">
+
+            <p>Name:</p>
+            <span>
+                <label>Первый шаг:</label>
+                <input type="checkbox">
+            </span>
+
+            <span>
+                <label>Второй шаг:</label>
+                <input type="checkbox">
+            </span>
+
+            <span>
+                <label>Третий шаг:</label>
+                <input type="checkbox">
+            </span>
+
+            <span>
+                <label>Четвёртый шаг:</label>
+                <input type="checkbox">
+            </span>
+
+            <span>
+                <label>Пятый шаг:</label>
+                <input type="checkbox">
+            </span>
+
+        </div>
+
+        <div class="columns">
+
+            <div class="for-begin">
+                <h2>Your tasks in begin:</h2>
+            </div>
+
+            <div class="in-progress">
+                <h2>Your tasks in progress:</h2>
+            </div>
+
+            <div class="final">
+                <h2>Your complete tasks:</h2>
+            </div>
+
+        </div>
+</body>
+</html>
