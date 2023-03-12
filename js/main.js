@@ -42,7 +42,9 @@ Vue.component('note-list',{
         <div class="columns">
 
             <div class="for-begin">
+
                 <h2>Your tasks in begin:</h2>
+                
             </div>
 
             <div class="in-progress">
@@ -68,6 +70,11 @@ Vue.component('note-list',{
     methods:{
 
     },
+    mounted(){
+        eventBus.$on('onSubmit',note => {
+            this.forBegin.push(note);
+        })
+    }
 
 })
 
@@ -143,7 +150,8 @@ Vue.component('create-task',{
                         {name: this.fifthPoint},
                     ],
                 }
-                eventBus.$emit('', note);//здесь должна вызывать функция(метод который должен быть описан выше) которая произведёт запись в другое место, откуда уже данные будут обрабатываться
+                console.log(note);
+                eventBus.$emit('onSubmit', note);//здесь должна вызывать функция(метод который должен быть описан выше) которая произведёт запись в другое место, откуда уже данные будут обрабатываться
                 this.nameOfTask = null;//после чего все значения обнуляются чтобы избежать дублирования данных
                 this.firstPoint = null;
                 this.secondPoint = null;
