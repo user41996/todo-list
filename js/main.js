@@ -3,47 +3,56 @@ let eventBus = new Vue();
 
 // Компонент
 Vue.component('note-list',{
+    props:{
+        note:{
+            name:{
+                type: Text,
+                required: true
+            },
+            points:{
+                type: Array,
+                required: true,
+                checked: {
+                    type: Boolean,
+                    required: true
+                }
+            },
+            status: {
+                type: Number,
+                required: true
+            },
+        },
+    },
     template:`
     
     <div class="note-list">
     
     <create-task></create-task>
 
-    <div class="ticket">
-
-            <p>Name:</p>
-            <span>
-                <label>Первый шаг:</label>
-                <input type="checkbox">
-            </span>
-
-            <span>
-                <label>Второй шаг:</label>
-                <input type="checkbox">
-            </span>
-
-            <span>
-                <label>Третий шаг:</label>
-                <input type="checkbox">
-            </span>
-
-            <span>
-                <label>Четвёртый шаг:</label>
-                <input type="checkbox">
-            </span>
-
-            <span>
-                <label>Пятый шаг:</label>
-                <input type="checkbox">
-            </span>
-
-        </div>
-
-        <div class="columns">
+    <div class="columns">
 
             <div class="for-begin">
 
                 <h2>Your tasks in begin:</h2>
+                <div>
+                    <ul>
+                        <li v-for="note in forBegin" class="task-border"><p>Name of task: {{note.name}}</p><br>
+                            <ul>
+                                <li v-for="task in note.points" v-if="task.name !== null"">
+
+                                <p >Step: {{task.name}}</p>
+                                <input type="checkbox" @click="checkedStatusForFirstColumn(note, points)">
+
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <div class="in-progress">
+                <h2>Your tasks in progress:</h2>
                 <div>
                     <ul>
                         <li v-for="note in forBegin" class="task-border"><p>Name of task: {{note.name}}</p><br>
@@ -58,18 +67,13 @@ Vue.component('note-list',{
                         </li>
                     </ul>
                 </div>
-
-            </div>
-
-            <div class="in-progress">
-                <h2>Your tasks in progress:</h2>
             </div>
 
             <div class="final">
                 <h2>Your complete tasks:</h2>
             </div>
 
-        </div>
+    </div>
 
     </div>
     `,
@@ -82,18 +86,38 @@ Vue.component('note-list',{
         }
     },
     methods:{
+        checkedStatusForFirstColumn(note,points){
+            points.checked = true; //при нажатии меняет статус checked на true
+            let count = 0; // для подсчёта всех пунктов
+            note.status = 0; //переменная для подсчёта общего количества отмеченных пунктов
 
+            for(let i = 0; i < 5; i++){
+                if(note.points[i].name !== null){
+                    count += 1;//считаем кол-во всех пунктов
+                }
+            }
+
+            for(let i = 0; i < count; i++){
+                if(note.points[i].checked === true){
+                    note.status += 1;//считаем кол-во отмеченных пунктов
+                }
+            }
+
+            if((note.status/count)*100 >= 50){
+                this.inProgress.push(note);//если при всех вычеслений, которые сверху, тогда пушим во второй массив
+            }
+        },
     },
+
     mounted(){  //здесь при нажатии должно пушить в массив переменную, которую я перенёс из другого компонента
         eventBus.$on('onSubmit',note => { //подписываемся на событие нажатия кнопки в форме
-            //this.forBegin.push(note); //пушит, теперь надо вывести
+            
             if(this.forBegin.length < 3){ //логика добавления в первый столбец
                 this.forBegin.push(note);//если в пером стобце меньше 3 карточек, тогда добавляем
             }
             else{
                 this.errors.push('Maximum number of cards!')//если пытаемся запушить 4 карточку, то она не добавляется и в ошибку добавляется сообщение о том, что в столбце максимальное количество карточек
             }
-            //console.log(this.forBegin);
         })
     }
 
@@ -164,12 +188,13 @@ Vue.component('create-task',{
                 let note = {
                     name: this.nameOfTask, //...имя задачи, которое равно введённому имени
                     points: [ //...массив с пунктами для выполнения задачи...
-                        {name: this.firstPoint},//... в котром по пунктно записывается
-                        {name: this.secondPoint},
-                        {name: this.thirdPoint},
-                        {name: this.forthPoint},
-                        {name: this.fifthPoint},
+                        {name: this.firstPoint, checked: false},//... в котром по пунктно записывается
+                        {name: this.secondPoint, checked: false},//checked false = по умолчанию пункт сичтается неотмеченным
+                        {name: this.thirdPoint, checked: false},
+                        {name: this.forthPoint, checked: false},
+                        {name: this.fifthPoint, checked: false},
                     ],
+                    status:0, // для подсчёта всех отмеченных пунктов чтобы обеспечить переход между колонками при 50% выполненных пунктов
                 }
                 console.log(note);
                 eventBus.$emit('onSubmit', note);//здесь должна вызывать функция(метод который должен быть описан выше) которая произведёт запись в другое место, откуда уже данные будут обрабатываться
@@ -196,5 +221,5 @@ Vue.component('create-task',{
 
 //подключаем приложение заранее
 let app = new Vue({
-    el:'#app'
+    el:'#app',
 });
