@@ -59,7 +59,10 @@ Vue.component('note-list',{
     `,
     data(){
         return{
-
+            forBegin:[],//массив, в котором будут лежать только что созданные карточки
+            inProgress:[],//массив, в котором будут лежать карточки, у которых достигнута отметка в 50%
+            final:[],//массив, в котором будут лежать выполненные карточки
+            errors:[],//массив с ошибками для валидации полей формы
         }
     },
     methods:{
@@ -121,9 +124,41 @@ Vue.component('create-task',{
             thirdPoint: null, //третий пункт карточки
             forthPoint: null, //четвёртый пункт карточки 
             fifthPoint: null, //пятый пункт карочки
+            errors:[]//массив который будет работать с ошибками при заполнении формы
         }
     },
     methods:{
+        //при нажатии на кнопку...
+        onSubmit(){
+            //если имя задачи, первый, второй и третий пункты не пустые, то ...
+            if(this.nameOfTask && this.firstPoint && this.secondPoint && this.thirdPoint){
+                //в переменную note записывается...
+                let note = {
+                    name: this.nameOfTask, //...имя задачи, которое равно введённому имени
+                    points: [ //...массив с пунктами для выполнения задачи...
+                        {name: this.firstPoint},//... в котром по пунктно записывается
+                        {name: this.secondPoint},
+                        {name: this.thirdPoint},
+                        {name: this.forthPoint},
+                        {name: this.fifthPoint},
+                    ],
+                }
+                eventBus.$emit('', note);//здесь должна вызывать функция(метод который должен быть описан выше) которая произведёт запись в другое место, откуда уже данные будут обрабатываться
+                this.nameOfTask = null;//после чего все значения обнуляются чтобы избежать дублирования данных
+                this.firstPoint = null;
+                this.secondPoint = null;
+                this.thirdPoint = null;
+                this.forthPoint = null;
+                this.fifthPoint = null;
+            }
+            //во всех других случаях...
+            else{
+                if(!this.nameOfTask) this.errors.push("Name of task required"); //если имя пустое,то в массив с ощибками добваится строка "Имя обязательно"
+                if(!this.firstPoint) this.errors.push("First point required"); //По аналогии с именем тоже самое и для первых трёх пунктов, которые по заданию обязательные
+                if(!this.secondPoint) this.errors.push("Second point required"); 
+                if(!this.thirdPoint) this.errors.push("Third point required"); 
+            }
+        },
 
     },
 
