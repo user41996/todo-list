@@ -84,6 +84,7 @@ Vue.component('note-list',{
                                 <li v-for="task in note.points" v-if="task.name !== null"">
                                 <p >Step: {{task.name}}</p>
                                 </li>
+                                <p>{{ note.date }}</p>
                             </ul>
                         </li>
                     </ul>
@@ -103,6 +104,18 @@ Vue.component('note-list',{
         }
     },
     methods:{
+        //методы которые сохраняют созданные карточки
+        localSaveFirstColumn(){
+            localStorage.setItem('forBegin', JSON.stringify(this.forBegin));//setItem локально сохраняет данные, в '' ключ, чтобы метод знал, что сохранять, а JSON.stringify возвращает json-строку
+        },
+        localSaveSecondColumn(){
+            localStorage.setItem('inProgress', JSON.stringify(inProgress));//setItem локально сохраняет данные, в '' ключ, чтобы метод знал, что сохранять, а JSON.stringify возвращает json-строку
+        },
+        localSaveThirdColumn(){
+            localStorage.setItem('final', JSON.stringify(final));//setItem локально сохраняет данные, в '' ключ, чтобы метод знал, что сохранять, а JSON.stringify возвращает json-строку
+        },
+
+        //методы для перехода карточки между  колонками
         changeStatus(note,task){
             task.checked = true; //при нажатии должен отмечать поле checked как true
             let count = 0; //переменная для подсчёта ВСЕХ элементов
@@ -125,19 +138,20 @@ Vue.component('note-list',{
             //если отмеченные поделить на все пункты и умножить на 100,а это больше 50(в процентах), тогда должен запушить такую задачу во второй массив
             if( ((note.status/count) * 100) >= 50 && this.inProgress.length != 5){
                 this.inProgress.push(note) //пушит в массив второго столбца карточку, но без сохранения отметок
-
-                this.forBegin.splice(this.forBegin.indexOf(note), 1);
+                this.forBegin.splice(this.forBegin.indexOf(note), 1);//вырезает первый найденный note начиная с 1 индекса
             }
             else if(this.inProgress.length === 5){
-                alert('In progress have a max number of tasks')
+                alert('In progress have a max number of tasks')//если пытаться запушить в 2 колонку шестую задачу, получим сообщение
             }
+            this.localSaveSecondColumn();//вызывает метод локального сохранения столбца
         },
+
         secondChangeStatus(note,task){
             task.checked = true;
             let count = 0;
             note.status = 0;
 
-            for(let i = 0; i <5;i++){
+            for(let i = 0; i < 5;i++){
                 if(note.points[i].name !== null){
                     count += 1;
                 }
@@ -150,24 +164,44 @@ Vue.component('note-list',{
             }
 
             if(((note.status / count) * 100) === 100){
-                this.final.push(note);
-                this.inProgress.splice(this.inProgress.indexOf(note), 1);
+                this.final.push(note);//добавляем в последний столбец
+                this.inProgress.splice(this.inProgress.indexOf(note), 1);////вырезает первый найденный note начиная с 1 индекса
+                note.date = new Date(); //функция, которая вернёт нам время последнего действия
             }
+            this.localSaveThirdColumn();//вызывает метод локального сохранения столбца
         }
     },
 
     mounted(){  //здесь при нажатии должно пушить в массив переменную, которую я перенёс из другого компонента
+
+        this.forBegin = JSON.parse(localStorage.getItem("forBegin")) || [];//json.parse - разбирает первое передаваемое значение на строку,getItem берёт по ключу то, что сохранил setItem,если не может преобразовать возвращает массив
+        this.inProgress = JSON.parse(localStorage.getItem("inProgress")) || [];//json.parse - разбирает первое передаваемое значение на строку,getItem берёт по ключу то, что сохранил setItem,если не может преобразовать возвращает массив
+        this.final = JSON.parse(localStorage.getItem("final")) || [];//json.parse - разбирает первое передаваемое значение на строку,getItem берёт по ключу то, что сохранил setItem,если не может преобразовать возвращает массив
+
         eventBus.$on('onSubmit',note => { //подписываемся на событие нажатия кнопки в форме
             
             if(this.forBegin.length < 3){ //логика добавления в первый столбец
                 this.forBegin.push(note);//если в первом столбце меньше 3 карточек, тогда добавляем
+                this.localSaveFirstColumn();//вызывает метод локального сохранения столбца
             }
             else{
                 this.errors.push('Maximum number of cards!')//если пытаемся запушить 4 карточку, то она не добавляется и в ошибку добавляется сообщение о том, что в столбце максимальное количество карточек
                 alert('Maximum number of cards!');
             }
         })
-    }
+    },
+
+    watch: {//обеспечивает ленивый доступ к побочным собитиям
+        forBegin(newValue) {//метод для сохранения первого столбца
+            localStorage.setItem("forBegin", JSON.stringify(newValue));//setItem - собирает массив forBegin, JSON.stringify возвращает json-строку
+        },
+        inProgress(newValue) {//метод для сохранения второго столбца
+            localStorage.setItem("inProgress", JSON.stringify(newValue));//setItem - собирает массив forBegin, JSON.stringify возвращает json-строку
+        },
+        final(newValue) {//метод для сохранения третьего столбца
+            localStorage.setItem("final", JSON.stringify(newValue));//setItem - собирает массив forBegin, JSON.stringify возвращает json-строку
+        }
+    },
 
 })
 
@@ -242,7 +276,7 @@ Vue.component('create-task',{
                         {name: this.forthPoint, checked: false},
                         {name: this.fifthPoint, checked: false},
                     ],
-                    data: null, //__
+                    date: null, //для добавления времени в конце того, как карточка перейдёт в 3 колонку
                     status:0, // для подсчёта всех отмеченных пунктов чтобы обеспечить переход между колонками при 50% выполненных пунктов
                 }
                 console.log(note);
