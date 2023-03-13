@@ -36,8 +36,8 @@ Vue.component('note-list',{
     <create-task></create-task>
 
     <div class="columns">
-
-            <div class="for-begin">
+            
+            <div class="for-begin" >
 
                 <h2>Your tasks in begin:</h2>
                 <div>
@@ -47,7 +47,7 @@ Vue.component('note-list',{
                                 <li v-for="task in note.points" v-if="task.name !== null"">
 
                                 <p >Step: {{task.name}}</p>
-                                <input type="checkbox" @click="changeStatus(note, task)">
+                                <input type="checkbox" @click="changeStatus(note, task)" :disabled="task.checked" >
 
                                 </li>
                             </ul>
@@ -66,7 +66,7 @@ Vue.component('note-list',{
                                 <li v-for="task in note.points" v-if="task.name !== null"">
 
                                 <p >Step: {{task.name}}</p>
-                                <input type="checkbox" @click="secondChangeStatus(note,task)"> 
+                                <input class="checkbox"  type="checkbox" @click="secondChangeStatus(note,task)""> 
 
                                 </li>
                             </ul>

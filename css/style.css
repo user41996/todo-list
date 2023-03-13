@@ -60,4 +60,12 @@ button:active{
 .task-border{
     border-top: 1px solid black;
     border-bottom: 1px solid blacks;
+    /* display: none; */
+}
+input:checked{
+   display: none;
+}
+
+.firstDisabled{
+    pointer-events: none;
 }
