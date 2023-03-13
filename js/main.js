@@ -77,6 +77,17 @@ Vue.component('note-list',{
 
             <div class="final">
                 <h2>Your complete tasks:</h2>
+                <div>
+                    <ul>
+                        <li v-for="note in final" class="task-border"><p>Name of task: {{note.name}}</p><br>
+                            <ul>
+                                <li v-for="task in note.points" v-if="task.name !== null"">
+                                <p >Step: {{task.name}}</p>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
             </div>
 
     </div>
@@ -112,10 +123,13 @@ Vue.component('note-list',{
             }
 
             //если отмеченные поделить на все пункты и умножить на 100,а это больше 50(в процентах), тогда должен запушить такую задачу во второй массив
-            if( ((note.status/count) * 100) >= 50 ){
+            if( ((note.status/count) * 100) >= 50 && this.inProgress.length != 5){
                 this.inProgress.push(note) //пушит в массив второго столбца карточку, но без сохранения отметок
 
                 this.forBegin.splice(this.forBegin.indexOf(note), 1);
+            }
+            else if(this.inProgress.length === 5){
+                alert('In progress have a max number of tasks')
             }
         },
         secondChangeStatus(note,task){
