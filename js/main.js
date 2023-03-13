@@ -66,7 +66,7 @@ Vue.component('note-list',{
                                 <li v-for="task in note.points" v-if="task.name !== null"">
 
                                 <p >Step: {{task.name}}</p>
-                                <input type="checkbox"> 
+                                <input type="checkbox" @click="secondChangeStatus(note,task)"> 
 
                                 </li>
                             </ul>
@@ -114,7 +114,30 @@ Vue.component('note-list',{
             //если отмеченные поделить на все пункты и умножить на 100,а это больше 50(в процентах), тогда должен запушить такую задачу во второй массив
             if( ((note.status/count) * 100) >= 50 ){
                 this.inProgress.push(note) //пушит в массив второго столбца карточку, но без сохранения отметок
+
                 this.forBegin.splice(this.forBegin.indexOf(note), 1);
+            }
+        },
+        secondChangeStatus(note,task){
+            task.checked = true;
+            let count = 0;
+            note.status = 0;
+
+            for(let i = 0; i <5;i++){
+                if(note.points[i].name !== null){
+                    count += 1;
+                }
+            }
+
+            for(let i = 0; i < count; i++){
+                if (note.points[i].checked === true){
+                    note.status += 1;
+                }
+            }
+
+            if(((note.status / count) * 100) === 100){
+                this.final.push(note);
+                this.inProgress.splice(this.inProgress.indexOf(note), 1);
             }
         }
     },
