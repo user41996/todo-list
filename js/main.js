@@ -1,3 +1,8 @@
+//!!!
+//Сделай перенос массива с отмеченными галачками
+//!!!
+
+
 //подключаем автобус заранее
 let eventBus = new Vue();
 
@@ -108,8 +113,8 @@ Vue.component('note-list',{
 
             //если отмеченные поделить на все пункты и умножить на 100,а это больше 50(в процентах), тогда должен запушить такую задачу во второй массив
             if( ((note.status/count) * 100) >= 50 ){
-                this.inProgress.push(note)
-                console.log(this.inProgress);
+                this.inProgress.push(note) //пушит в массив второго столбца карточку, но без сохранения отметок
+                this.forBegin.splice(this.forBegin.indexOf(note), 1);
             }
         }
     },
