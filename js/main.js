@@ -1,7 +1,3 @@
-//!!!
-//Сделай перенос массива с отмеченными галачками
-//!!!
-
 //подключаем автобус заранее
 let eventBus = new Vue();
 
@@ -27,6 +23,10 @@ Vue.component('note-list',{
               required: true,
           },
       },
+        // forBegin:Array,
+        // inProgress:Array,
+        // final:Array
+
     },
     template:`
     
@@ -61,7 +61,7 @@ Vue.component('note-list',{
                                 <li v-for="task in note.points" v-if="task.name !== null"">
 
                                 <p >Step: {{task.name}}</p>
-                                <input type="checkbox" class="firstDisabled" :class="checked">
+                                <input type="checkbox" class="firstDisabled">
 
                                 </li>
                             </ul>
@@ -95,7 +95,7 @@ Vue.component('note-list',{
                         <li v-for="note in final" class="task-border"><p>Name of task: {{note.name}}</p><br>
                             <ul>
                                 <li v-for="task in note.points" v-if="task.name !== null"">
-                                <p >Step: {{task.name}}</p>
+                                <p>Step: {{task.name}}</p>
                                 </li>
                                 <p>{{ note.date }}</p>
                             </ul>
@@ -149,10 +149,10 @@ Vue.component('note-list',{
             }
 
             //если отмеченные поделить на все пункты и умножить на 100,а это больше 50(в процентах), тогда должен запушить такую задачу во второй массив
-            if( ((note.status/count) * 100) >= 50 && this.inProgress.length != 5){
+            if( ((note.status/count) * 100) >= 50 && this.inProgress.length !== 5){
                 note.percent = (note.status/count) * 100;
                 this.inProgress.push(note) //пушит в массив второго столбца карточку, но без сохранения отметок
-                this.forBegin.splice(this.forBegin.indexOf(note), 1);//вырезает первый найденный note начиная с 1 индекса
+                this.forBegin.splice(this.forBegin.indexOf(note), 0);//вырезает первый найденный note
             }
             else if(this.inProgress.length === 5){
                 alert('In progress have a max number of tasks')//если пытаться запушить в 2 колонку шестую задачу, получим сообщение
@@ -179,7 +179,7 @@ Vue.component('note-list',{
 
             if(((note.status / count) * 100) === 100){
                 this.final.push(note);//добавляем в последний столбец
-                this.inProgress.splice(this.inProgress.indexOf(note), 1);////вырезает первый найденный note начиная с 1 индекса
+                this.inProgress.splice(this.inProgress.indexOf(note), 0);////вырезает первый найденный note начиная с 1 индекса
                 note.date = new Date(); //функция, которая вернёт нам время последнего действия
             }
             this.localSaveThirdColumn();//вызывает метод локального сохранения столбца
@@ -193,7 +193,7 @@ Vue.component('note-list',{
         this.final = JSON.parse(localStorage.getItem("final")) || [];//json.parse - разбирает первое передаваемое значение на строку,getItem берёт по ключу то, что сохранил setItem,если не может преобразовать возвращает массив
 
         eventBus.$on('onSubmit',note => { //подписываемся на событие нажатия кнопки в форме
-            
+
             if(this.forBegin.length < 3){ //логика добавления в первый столбец
                 this.forBegin.push(note);//если в первом столбце меньше 3 карточек, тогда добавляем
                 this.localSaveFirstColumn();//вызывает метод локального сохранения столбца
@@ -205,7 +205,7 @@ Vue.component('note-list',{
         })
     },
 
-    watch: {//обеспечивает ленивый доступ к побочным собитиям
+    watch: {//обеспечивает ленивый доступ к побочным событиям
         forBegin(newValue) {//метод для сохранения первого столбца
             localStorage.setItem("forBegin", JSON.stringify(newValue));//setItem - собирает массив forBegin, JSON.stringify возвращает json-строку
         },
@@ -292,9 +292,7 @@ Vue.component('create-task',{
                     ],
                     date: null, //для добавления времени в конце того, как карточка перейдёт в 3 колонку
                     status:0, // для подсчёта всех отмеченных пунктов, чтобы обеспечить переход между колонками при 50% выполненных пунктов
-                    percent:0, //для процентов
                 }
-                console.log(note);
                 eventBus.$emit('onSubmit', note);//здесь должна вызывать функция(метод, который должен быть описан выше) которая произведёт запись в другое место, откуда уже данные будут обрабатываться
                 this.nameOfTask = null;//после чего все значения обнуляются, чтобы избежать дублирования данных
                 this.firstPoint = null;
@@ -302,14 +300,13 @@ Vue.component('create-task',{
                 this.thirdPoint = null;
                 this.forthPoint = null;
                 this.fifthPoint = null;
-                console.log(note);
             }
             //во всех других случаях.../
             else{
                 if(!this.nameOfTask) this.errors.push("Name of task required"); //если имя пустое,то в массив с ошибками добавится строка "Имя обязательно"
                 if(!this.firstPoint) this.errors.push("First point required"); //По аналогии с именем тоже самое и для первых трёх пунктов, которые по заданию обязательные
-                if(!this.secondPoint) this.errors.push("Second point required"); 
-                if(!this.thirdPoint) this.errors.push("Third point required"); 
+                if(!this.secondPoint) this.errors.push("Second point required");
+                if(!this.thirdPoint) this.errors.push("Third point required");
             }
         },
 
@@ -320,4 +317,10 @@ Vue.component('create-task',{
 //подключаем приложение заранее
 let app = new Vue({
     el:'#app',
+    data:{
+
+    },
+    methods:{
+
+    }
 });
