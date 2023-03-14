@@ -59,13 +59,14 @@ button:active{
 /* для разделения карточек */
 .task-border{
     border-top: 1px solid black;
-    border-bottom: 1px solid blacks;
+    border-bottom: 1px solid black;
     /* display: none; */
 }
-input:checked{
+/*должен "сохранять" отмеченные галочки*/
+.checked{
    display: none;
 }
-
+/*для отключения возможности взаимодействия с блоком, когда во второй колоне 5 карточек*/
 .firstDisabled{
     pointer-events: none;
 }

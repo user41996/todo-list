@@ -2,7 +2,6 @@
 //Сделай перенос массива с отмеченными галачками
 //!!!
 
-
 //подключаем автобус заранее
 let eventBus = new Vue();
 
@@ -47,7 +46,7 @@ Vue.component('note-list',{
                                 <li v-for="task in note.points" v-if="task.name !== null"">
 
                                 <p >Step: {{task.name}}</p>
-                                <input type="checkbox" @click="changeStatus(note, task)" :disabled="task.checked" >
+                                <input type="checkbox" @click="changeStatus(note, task)" :class="{checked: task.checked}">
 
                                 </li>
                             </ul>
@@ -66,7 +65,7 @@ Vue.component('note-list',{
                                 <li v-for="task in note.points" v-if="task.name !== null"">
 
                                 <p >Step: {{task.name}}</p>
-                                <input class="checkbox"  type="checkbox" @click="secondChangeStatus(note,task)""> 
+                                <input class="checkbox"  type="checkbox" @click="secondChangeStatus(note,task)" :class="{checked: task.checked}"> 
 
                                 </li>
                             </ul>
