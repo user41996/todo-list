@@ -68,5 +68,5 @@ button:active{
 }
 /*для отключения возможности взаимодействия с блоком, когда во второй колоне 5 карточек*/
 .firstDisabled{
-    pointer-events: none;
+    display: none;
 }

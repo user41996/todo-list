@@ -36,10 +36,10 @@ Vue.component('note-list',{
 
     <div class="columns">
             
-            <div class="for-begin" >
+            <div class="for-begin">
 
                 <h2>Your tasks in begin:</h2>
-                <div>
+                <div v-if="inProgress.length != 5 ">
                     <ul>
                         <li v-for="note in forBegin" class="task-border"><p>Name of task: {{note.name}}</p><br>
                             <ul>
@@ -53,7 +53,21 @@ Vue.component('note-list',{
                         </li>
                     </ul>
                 </div>
+                
+                <div v-if="inProgress.length === 5" :class="firstDisabled">
+                    <ul>
+                        <li v-for="note in forBegin" class="task-border"><p>Name of task: {{note.name}}</p><br>
+                            <ul>
+                                <li v-for="task in note.points" v-if="task.name !== null"">
 
+                                <p >Step: {{task.name}}</p>
+                                <input type="checkbox" class="firstDisabled" :class="checked">
+
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
             </div>
 
             <div class="in-progress">
@@ -103,18 +117,18 @@ Vue.component('note-list',{
         }
     },
     methods:{
-        //методы которые сохраняют созданные карточки
+        //методы, которые сохраняют созданные карточки
         localSaveFirstColumn(){
-            localStorage.setItem('forBegin', JSON.stringify(this.forBegin));//setItem локально сохраняет данные, в '' ключ, чтобы метод знал, что сохранять, а JSON.stringify возвращает json-строку
+            localStorage.setItem('forBegin', JSON.stringify(this.forBegin));//setItem собирает и локально сохраняет данные, в '' ключ, чтобы метод знал, что сохранять, а JSON.stringify возвращает json-строку
         },
         localSaveSecondColumn(){
-            localStorage.setItem('inProgress', JSON.stringify(inProgress));//setItem локально сохраняет данные, в '' ключ, чтобы метод знал, что сохранять, а JSON.stringify возвращает json-строку
+            localStorage.setItem('inProgress', JSON.stringify(this.inProgress));//setItem локально сохраняет данные, в '' ключ, чтобы метод знал, что сохранять, а JSON.stringify возвращает json-строку
         },
         localSaveThirdColumn(){
-            localStorage.setItem('final', JSON.stringify(final));//setItem локально сохраняет данные, в '' ключ, чтобы метод знал, что сохранять, а JSON.stringify возвращает json-строку
+            localStorage.setItem('final', JSON.stringify(this.final));//setItem локально сохраняет данные, в '' ключ, чтобы метод знал, что сохранять, а JSON.stringify возвращает json-строку
         },
 
-        //методы для перехода карточки между  колонками
+        //методы для перехода карточки между колонками
         changeStatus(note,task){
             task.checked = true; //при нажатии должен отмечать поле checked как true
             let count = 0; //переменная для подсчёта ВСЕХ элементов
@@ -136,6 +150,7 @@ Vue.component('note-list',{
 
             //если отмеченные поделить на все пункты и умножить на 100,а это больше 50(в процентах), тогда должен запушить такую задачу во второй массив
             if( ((note.status/count) * 100) >= 50 && this.inProgress.length != 5){
+                note.percent = (note.status/count) * 100;
                 this.inProgress.push(note) //пушит в массив второго столбца карточку, но без сохранения отметок
                 this.forBegin.splice(this.forBegin.indexOf(note), 1);//вырезает первый найденный note начиная с 1 индекса
             }
@@ -257,7 +272,7 @@ Vue.component('create-task',{
             thirdPoint: null, //третий пункт карточки
             forthPoint: null, //четвёртый пункт карточки 
             fifthPoint: null, //пятый пункт карточки
-            errors:[]//массив который будет работать с ошибками при заполнении формы
+            errors:[]//массив, который будет работать с ошибками при заполнении формы
         }
     },
     methods:{
@@ -276,11 +291,12 @@ Vue.component('create-task',{
                         {name: this.fifthPoint, checked: false},
                     ],
                     date: null, //для добавления времени в конце того, как карточка перейдёт в 3 колонку
-                    status:0, // для подсчёта всех отмеченных пунктов чтобы обеспечить переход между колонками при 50% выполненных пунктов
+                    status:0, // для подсчёта всех отмеченных пунктов, чтобы обеспечить переход между колонками при 50% выполненных пунктов
+                    percent:0, //для процентов
                 }
                 console.log(note);
-                eventBus.$emit('onSubmit', note);//здесь должна вызывать функция(метод который должен быть описан выше) которая произведёт запись в другое место, откуда уже данные будут обрабатываться
-                this.nameOfTask = null;//после чего все значения обнуляются чтобы избежать дублирования данных
+                eventBus.$emit('onSubmit', note);//здесь должна вызывать функция(метод, который должен быть описан выше) которая произведёт запись в другое место, откуда уже данные будут обрабатываться
+                this.nameOfTask = null;//после чего все значения обнуляются, чтобы избежать дублирования данных
                 this.firstPoint = null;
                 this.secondPoint = null;
                 this.thirdPoint = null;
