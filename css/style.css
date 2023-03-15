@@ -64,7 +64,7 @@ button:active{
 }
 /*должен "сохранять" отмеченные галочки*/
 .checked{
-   display: none;
+   text-decoration: line-through;
 }
 /*для отключения возможности взаимодействия с блоком, когда во второй колоне 5 карточек*/
 .firstDisabled{

@@ -45,8 +45,7 @@ Vue.component('note-list',{
                             <ul>
                                 <li v-for="task in note.points" v-if="task.name !== null"">
 
-                                <p >Step: {{task.name}}</p>
-                                <input type="checkbox" @click="changeStatus(note, task)" :class="{checked: task.checked}">
+                                <p @click="changeStatus(note, task)" :class="{checked: task.checked}">Step: {{task.name}}</p>
 
                                 </li>
                             </ul>
@@ -61,7 +60,6 @@ Vue.component('note-list',{
                                 <li v-for="task in note.points" v-if="task.name !== null"">
 
                                 <p >Step: {{task.name}}</p>
-                                <input type="checkbox" class="firstDisabled">
 
                                 </li>
                             </ul>
@@ -78,8 +76,7 @@ Vue.component('note-list',{
                             <ul>
                                 <li v-for="task in note.points" v-if="task.name !== null"">
 
-                                <p >Step: {{task.name}}</p>
-                                <input class="checkbox"  type="checkbox" @click="secondChangeStatus(note,task)" :class="{checked: task.checked}"> 
+                                <p @click="secondChangeStatus(note,task)" :class="{checked: task.checked}">Step: {{task.name}}</p>
 
                                 </li>
                             </ul>
@@ -152,7 +149,7 @@ Vue.component('note-list',{
             if( ((note.status/count) * 100) >= 50 && this.inProgress.length !== 5){
                 note.percent = (note.status/count) * 100;
                 this.inProgress.push(note) //пушит в массив второго столбца карточку, но без сохранения отметок
-                this.forBegin.splice(this.forBegin.indexOf(note), 0);//вырезает первый найденный note
+                this.forBegin.splice(this.forBegin.indexOf(note), 1);//вырезает первый найденный note
             }
             else if(this.inProgress.length === 5){
                 alert('In progress have a max number of tasks')//если пытаться запушить в 2 колонку шестую задачу, получим сообщение
@@ -179,7 +176,7 @@ Vue.component('note-list',{
 
             if(((note.status / count) * 100) === 100){
                 this.final.push(note);//добавляем в последний столбец
-                this.inProgress.splice(this.inProgress.indexOf(note), 0);////вырезает первый найденный note начиная с 1 индекса
+                this.inProgress.splice(this.inProgress.indexOf(note), 1);////вырезает первый найденный note начиная с 1 индекса
                 note.date = new Date(); //функция, которая вернёт нам время последнего действия
             }
             this.localSaveThirdColumn();//вызывает метод локального сохранения столбца
