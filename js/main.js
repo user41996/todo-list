@@ -12,6 +12,11 @@ Vue.component('note-list',{
           points: { //и к массиву
               type: Array,
               required: true,
+              name:{
+                type: Text,
+                default: null,
+                required: true
+              },
               checked:{
                   type: Boolean,
                   default:false,
@@ -23,9 +28,6 @@ Vue.component('note-list',{
               required: true,
           },
       },
-        // forBegin:Array,
-        // inProgress:Array,
-        // final:Array
 
     },
     template:`
@@ -41,15 +43,23 @@ Vue.component('note-list',{
                 <h2>Your tasks in begin:</h2>
                 <div v-if="inProgress.length != 5 ">
                     <ul>
-                        <li v-for="note in forBegin" class="task-border"><p>Name of task: {{note.name}}</p><br>
+                        <li v-for="(note, index) in forBegin" class="task-border"><p>Name of task: {{note.name}}</p><br>
                             <ul>
-                                <li v-for="task in note.points" v-if="task.name !== null"">
+                                <li v-for="(task, mark) in note.points" v-if="task.name !== null"">
 
                                 <p @click="changeStatus(note, task)" :class="{checked: task.checked}">Step: {{task.name}}</p>
-
+                               
                                 </li>
                             </ul>
+                            <form @submit.prevent = "addStep">
+                                <span>
+                                    <label>Your new step: </label>
+                                    <input type="text" placeholder="New step" required v-model="newPoint">
+                                    <input class="add" type="submit" value="Add step" @click="addStep(index)">
+                                </span>
+                            </form>
                         </li>
+                        
                     </ul>
                 </div>
                 
@@ -58,9 +68,7 @@ Vue.component('note-list',{
                         <li v-for="note in forBegin" class="task-border"><p>Name of task: {{note.name}}</p><br>
                             <ul>
                                 <li v-for="task in note.points" v-if="task.name !== null"">
-
-                                <p >Step: {{task.name}}</p>
-
+                                    <p>Step: {{task.name}}</p>
                                 </li>
                             </ul>
                         </li>
@@ -111,6 +119,9 @@ Vue.component('note-list',{
             inProgress:[],//массив, в котором будут лежать карточки c достигнутой отметкой в 50%
             final:[],//массив, в котором будут лежать выполненные карточки
             errors:[],//массив с ошибками для валидации полей формы
+            newPoint:null,//для добавления новых пунктов
+
+
         }
     },
     methods:{
@@ -180,8 +191,16 @@ Vue.component('note-list',{
                 note.date = new Date(); //функция, которая вернёт нам время последнего действия
             }
             this.localSaveThirdColumn();//вызывает метод локального сохранения столбца
+        },
+
+        // передай сюда индекс после нажатия кнопки формы для добавления шагов
+        // через событие передать через пропсы данные
+        addStep(index){
+                console.log(index);//поймал индекс карточки, теперь нужно запушить в массив points,который внутри объекта note,
+            }
         }
-    },
+
+    ,
 
     mounted(){  //здесь при нажатии должно пушить в массив переменную, которую я перенёс из другого компонента
 
@@ -199,6 +218,10 @@ Vue.component('note-list',{
                 this.errors.push('Maximum number of cards!')//если пытаемся запушить 4 карточку, то она не добавляется и в ошибку добавляется сообщение о том, что в столбце максимальное количество карточек
                 alert('Maximum number of cards!');
             }
+        })
+        //посмотри сюда!!!!!
+        eventBus.$on('addStep', index => {
+
         })
     },
 
@@ -318,6 +341,8 @@ let app = new Vue({
 
     },
     methods:{
+        addTask(){
 
+        }
     }
 });

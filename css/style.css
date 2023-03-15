@@ -6,7 +6,7 @@
 header{ 
     width: 100%;
     height: 50px;
-    background-color: orangered;
+    background-color: mediumseagreen;
 }
 /* стили для формы */
 form{
@@ -23,13 +23,13 @@ form{
 button{
     width: 150px;
     height: 30px;
-    background-color: black;
+    background-color: blueviolet;
     color: whitesmoke;
     border: 1px solid black;
 }
 /* стили для кнопки, когда на неё нажать */
 button:active{
-    background-color: aqua;
+    background-color: mediumseagreen;
 }
 /* стили для блока в котором лежат все колонки */
 .columns{
@@ -68,5 +68,8 @@ button:active{
 }
 /*для отключения возможности взаимодействия с блоком, когда во второй колоне 5 карточек*/
 .firstDisabled{
-    display: none;
+    pointer-events: none;
+}
+.add{
+    background-color:blueviolet;
 }
