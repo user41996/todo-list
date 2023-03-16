@@ -2,35 +2,34 @@
 let eventBus = new Vue();
 
 // Компонент
-Vue.component('note-list',{
-    props:{ //обеспечиваем доступ компонента к...
-      note:{ //...объекту note, который находится в другом компоненте...
-          name:{//у которого даём доступ к свойству name
-              type: Text,
-              required: true,
-          },
-          points: { //и к массиву
-              type: Array,
-              required: true,
-              name:{
+Vue.component('note-list', {
+    props: { //обеспечиваем доступ компонента к...
+        note: { //...объекту note, который находится в другом компоненте...
+            name: {//у которого даём доступ к свойству name
                 type: Text,
-                default: null,
-                required: true
-              },
-              checked:{
-                  type: Boolean,
-                  default:false,
-                  required: true,
-              }
-          },
-          status: {//и к переменной, которая считает кол-во отмеченных
-              type: Number,
-              required: true,
-          },
-      },
-
+                required: true,
+            },
+            points: { //и к массиву
+                type: Array,
+                required: true,
+                name: {
+                    type: Text,
+                    default: null,
+                    required: true
+                },
+                checked: {
+                    type: Boolean,
+                    default: false,
+                    required: true,
+                }
+            },
+            status: {//и к переменной, которая считает кол-во отмеченных
+                type: Number,
+                required: true,
+            },
+        },
     },
-    template:`
+    template: `
     
     <div class="note-list">
     
@@ -43,23 +42,17 @@ Vue.component('note-list',{
                 <h2>Your tasks in begin:</h2>
                 <div v-if="inProgress.length != 5 ">
                     <ul>
-                        <li v-for="(note, index) in forBegin" class="task-border"><p>Name of task: {{note.name}}</p><br>
+                        <li v-for="(note, index) in forBegin" class="task-border"><p>Name of task: {{note.name}}</p><br> <!-- здесь забирал индекс (note, index) -->
                             <ul>
-                                <li v-for="(task, mark) in note.points" v-if="task.name !== null"">
-
-                                <p @click="changeStatus(note, task)" :class="{checked: task.checked}">Step: {{task.name}}</p>
-                               
-                                </li>
+                                    <li v-for="task in note.points" v-if="task.name !== null"">
+    
+                                        <p @click="changeStatus(note, task)" :class="{checked: task.checked}">Step: {{task.name}}</p>
+                                        
+                                    </li>
                             </ul>
-                            <form @submit.prevent = "addStep">
-                                <span>
-                                    <label>Your new step: </label>
-                                    <input type="text" placeholder="New step" required v-model="newPoint">
-                                    <input class="add" type="submit" value="Add step" @click="addStep(index)">
-                                </span>
-                            </form>
+                            <addStep :index="index" @addStep="addStep"> 
+                            </addStep>
                         </li>
-                        
                     </ul>
                 </div>
                 
@@ -113,116 +106,111 @@ Vue.component('note-list',{
 
     </div>
     `,
-    data(){
-        return{
-            forBegin:[],//массив, в котором будут лежать только что созданные карточки
-            inProgress:[],//массив, в котором будут лежать карточки c достигнутой отметкой в 50%
-            final:[],//массив, в котором будут лежать выполненные карточки
-            errors:[],//массив с ошибками для валидации полей формы
-            newPoint:null,//для добавления новых пунктов
-
+    data() {
+        return {
+            forBegin: [],//массив, в котором будут лежать только что созданные карточки
+            inProgress: [],//массив, в котором будут лежать карточки c достигнутой отметкой в 50%
+            final: [],//массив, в котором будут лежать выполненные карточки
+            errors: [],//массив с ошибками для валидации полей формы
 
         }
     },
-    methods:{
+    methods: {
+        addStep(point) { //метод для добавления в карточку новых пунктов
+            // console.log(this.forBegin[point.index]);
+            this.forBegin[point.index].points.push(point.point); //вот теперь адекватно добавляет в мой массив
+        },
+
         //методы, которые сохраняют созданные карточки
-        localSaveFirstColumn(){
+        localSaveFirstColumn() {
             localStorage.setItem('forBegin', JSON.stringify(this.forBegin));//setItem собирает и локально сохраняет данные, в '' ключ, чтобы метод знал, что сохранять, а JSON.stringify возвращает json-строку
         },
-        localSaveSecondColumn(){
+        localSaveSecondColumn() {
             localStorage.setItem('inProgress', JSON.stringify(this.inProgress));//setItem локально сохраняет данные, в '' ключ, чтобы метод знал, что сохранять, а JSON.stringify возвращает json-строку
         },
-        localSaveThirdColumn(){
+        localSaveThirdColumn() {
             localStorage.setItem('final', JSON.stringify(this.final));//setItem локально сохраняет данные, в '' ключ, чтобы метод знал, что сохранять, а JSON.stringify возвращает json-строку
         },
 
         //методы для перехода карточки между колонками
-        changeStatus(note,task){
+        changeStatus(note, task, point) {
+            point.checked = true;
             task.checked = true; //при нажатии должен отмечать поле checked как true
             let count = 0; //переменная для подсчёта ВСЕХ элементов
             note.status = 0; //для подсчёта отмеченных пунктов
-
             //цикл, который считает все пункты
-            for(let i = 0;i < 5; i++){
-                if(note.points[i].name !== null){
+            for (let i = 0; i < 5; i++) {
+                if (note.points[i].name !== null ) {
                     count += 1;
-                };
+                }
+                ;
             }
 
             //цикл, который считает отмеченные пункты
-            for(let i = 0; i < count; i++){
+            for (let i = 0; i < count; i++) {
                 if (note.points[i].checked === true){
                     note.status += 1;
                 }
             }
 
             //если отмеченные поделить на все пункты и умножить на 100,а это больше 50(в процентах), тогда должен запушить такую задачу во второй массив
-            if( ((note.status/count) * 100) >= 50 && this.inProgress.length !== 5){
-                note.percent = (note.status/count) * 100;
+            if (((note.status / count) * 100) >= 50 && this.inProgress.length !== 5) {
+                note.percent = (note.status / count) * 100;
                 this.inProgress.push(note) //пушит в массив второго столбца карточку, но без сохранения отметок
                 this.forBegin.splice(this.forBegin.indexOf(note), 1);//вырезает первый найденный note
             }
-            else if(this.inProgress.length === 5){
+            else if (this.inProgress.length === 5) {
                 alert('In progress have a max number of tasks')//если пытаться запушить в 2 колонку шестую задачу, получим сообщение
             }
             this.localSaveSecondColumn();//вызывает метод локального сохранения столбца
         },
 
-        secondChangeStatus(note,task){
+        secondChangeStatus(note, task) {
             task.checked = true;
             let count = 0;
             note.status = 0;
 
-            for(let i = 0; i < 5;i++){
-                if(note.points[i].name !== null){
+            for (let i = 0; i < 5; i++) {
+                if (note.points[i].name !== null) {
                     count += 1;
                 }
             }
 
-            for(let i = 0; i < count; i++){
-                if (note.points[i].checked === true){
+            for (let i = 0; i < count; i++) {
+                if (note.points[i].checked === true) {
                     note.status += 1;
                 }
             }
 
-            if(((note.status / count) * 100) === 100){
+            if (((note.status / count) * 100) === 100) {
                 this.final.push(note);//добавляем в последний столбец
                 this.inProgress.splice(this.inProgress.indexOf(note), 1);////вырезает первый найденный note начиная с 1 индекса
                 note.date = new Date(); //функция, которая вернёт нам время последнего действия
             }
             this.localSaveThirdColumn();//вызывает метод локального сохранения столбца
         },
-
-        // передай сюда индекс после нажатия кнопки формы для добавления шагов
-        // через событие передать через пропсы данные
-        addStep(index){
-                console.log(index);//поймал индекс карточки, теперь нужно запушить в массив points,который внутри объекта note,
-            }
-        }
+    }
 
     ,
 
-    mounted(){  //здесь при нажатии должно пушить в массив переменную, которую я перенёс из другого компонента
+    mounted() {  //здесь при нажатии должно пушить в массив переменную, которую я перенёс из другого компонента
 
         this.forBegin = JSON.parse(localStorage.getItem("forBegin")) || [];//json.parse - разбирает первое передаваемое значение на строку,getItem берёт по ключу то, что сохранил setItem,если не может преобразовать возвращает массив
         this.inProgress = JSON.parse(localStorage.getItem("inProgress")) || [];//json.parse - разбирает первое передаваемое значение на строку,getItem берёт по ключу то, что сохранил setItem,если не может преобразовать возвращает массив
         this.final = JSON.parse(localStorage.getItem("final")) || [];//json.parse - разбирает первое передаваемое значение на строку,getItem берёт по ключу то, что сохранил setItem,если не может преобразовать возвращает массив
 
-        eventBus.$on('onSubmit',note => { //подписываемся на событие нажатия кнопки в форме
+        eventBus.$on('onSubmit', note => { //подписываемся на событие нажатия кнопки в форме
 
-            if(this.forBegin.length < 3){ //логика добавления в первый столбец
+            if (this.forBegin.length < 3) { //логика добавления в первый столбец
                 this.forBegin.push(note);//если в первом столбце меньше 3 карточек, тогда добавляем
                 this.localSaveFirstColumn();//вызывает метод локального сохранения столбца
-            }
-            else{
+            } else {
                 this.errors.push('Maximum number of cards!')//если пытаемся запушить 4 карточку, то она не добавляется и в ошибку добавляется сообщение о том, что в столбце максимальное количество карточек
                 alert('Maximum number of cards!');
             }
         })
-        //посмотри сюда!!!!!
-        eventBus.$on('addStep', index => {
 
-        })
+        //посмотри сюда!!!!!
     },
 
     watch: {//обеспечивает ленивый доступ к побочным событиям
@@ -234,14 +222,68 @@ Vue.component('note-list',{
         },
         final(newValue) {//метод для сохранения третьего столбца
             localStorage.setItem("final", JSON.stringify(newValue));//setItem - собирает массив forBegin, JSON.stringify возвращает json-строку
-        }
+        },
     },
 
 })
 
+//
+Vue.component('addStep', {
+    props: { //обеспечиваем доступ компонента к...
+        note: { //...объекту note, который находится в другом компоненте...
+            name: {//у которого даём доступ к свойству name
+                type: Text,
+                required: true,
+            },
+            points: { //и к массиву
+                type: Array,
+                required: true,
+                name: {
+                    type: Text,
+                    default: null,
+                    required: true
+                },
+                checked: {
+                    type: Boolean,
+                    default: false,
+                    required: true,
+                }
+            }
+        },
+        index: null //обеспечиваем передачу индекса для того, чтобы отслеживать внесения в конкретную карточку
+    },
+    template: `
+    <form @submit.prevent = "addStep">
+        <span>
+            <label>Your new step: </label>
+            <input type="text" placeholder="New step" required v-model="newPoint">
+            <button type="submit">Add step</button>
+        </span>
+    </form>
+    `,
+    data() {
+        return {
+            newPoint: null,
+            checked: false
+        }
+    },
+    methods: {
+        addStep() {//добавление дополнительных заданий
+            // console.log(this.index);
+            this.$emit('addStep', {
+                point: {
+                    name: this.newPoint,
+                    checked: this.checked
+                },
+                index: this.index
+            });
+        }
+    }
+})
+
 //компонент для формы
-Vue.component('create-task',{
-    template:`
+Vue.component('create-task', {
+    template: `
     <form class="create-task" @submit.prevent="onSubmit">
 
         <span>
@@ -284,22 +326,22 @@ Vue.component('create-task',{
 
     </form>
     `,
-    data(){
-        return{
+    data() {
+        return {
             nameOfTask: null, //имя задачи(карточки)
             firstPoint: null, //первый пункт карточки
             secondPoint: null, //второй пункт карточки
             thirdPoint: null, //третий пункт карточки
             forthPoint: null, //четвёртый пункт карточки 
             fifthPoint: null, //пятый пункт карточки
-            errors:[]//массив, который будет работать с ошибками при заполнении формы
+            errors: []//массив, который будет работать с ошибками при заполнении формы
         }
     },
-    methods:{
+    methods: {
         //при нажатии на кнопку...
-        onSubmit(){
+        onSubmit() {
             //если имя задачи, первый, второй и третий пункты не пустые, то ...
-            if(this.nameOfTask && this.firstPoint && this.secondPoint && this.thirdPoint){
+            if (this.nameOfTask && this.firstPoint && this.secondPoint && this.thirdPoint) {
                 //в переменную note записывается...
                 let note = {
                     name: this.nameOfTask, //...имя задачи, которое равно введённому имени
@@ -311,7 +353,7 @@ Vue.component('create-task',{
                         {name: this.fifthPoint, checked: false},
                     ],
                     date: null, //для добавления времени в конце того, как карточка перейдёт в 3 колонку
-                    status:0, // для подсчёта всех отмеченных пунктов, чтобы обеспечить переход между колонками при 50% выполненных пунктов
+                    status: 0, // для подсчёта всех отмеченных пунктов, чтобы обеспечить переход между колонками при 50% выполненных пунктов
                 }
                 eventBus.$emit('onSubmit', note);//здесь должна вызывать функция(метод, который должен быть описан выше) которая произведёт запись в другое место, откуда уже данные будут обрабатываться
                 this.nameOfTask = null;//после чего все значения обнуляются, чтобы избежать дублирования данных
@@ -322,11 +364,11 @@ Vue.component('create-task',{
                 this.fifthPoint = null;
             }
             //во всех других случаях.../
-            else{
-                if(!this.nameOfTask) this.errors.push("Name of task required"); //если имя пустое,то в массив с ошибками добавится строка "Имя обязательно"
-                if(!this.firstPoint) this.errors.push("First point required"); //По аналогии с именем тоже самое и для первых трёх пунктов, которые по заданию обязательные
-                if(!this.secondPoint) this.errors.push("Second point required");
-                if(!this.thirdPoint) this.errors.push("Third point required");
+            else {
+                if (!this.nameOfTask) this.errors.push("Name of task required"); //если имя пустое,то в массив с ошибками добавится строка "Имя обязательно"
+                if (!this.firstPoint) this.errors.push("First point required"); //По аналогии с именем тоже самое и для первых трёх пунктов, которые по заданию обязательные
+                if (!this.secondPoint) this.errors.push("Second point required");
+                if (!this.thirdPoint) this.errors.push("Third point required");
             }
         },
 
@@ -336,13 +378,6 @@ Vue.component('create-task',{
 
 //подключаем приложение заранее
 let app = new Vue({
-    el:'#app',
-    data:{
-
-    },
-    methods:{
-        addTask(){
-
-        }
-    }
+    el: '#app',
+    data: {},
 });
