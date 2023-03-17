@@ -116,9 +116,10 @@ Vue.component('note-list', {
         }
     },
     methods: {
-        addStep(point) { //метод для добавления в карточку новых пунктов
+        addStep(point) {
             // console.log(this.forBegin[point.index]);
             this.forBegin[point.index].points.push(point.point); //вот теперь адекватно добавляет в мой массив
+            this.localSaveFirstColumn();
         },
 
         //методы, которые сохраняют созданные карточки
@@ -133,29 +134,28 @@ Vue.component('note-list', {
         },
 
         //методы для перехода карточки между колонками
-        changeStatus(note, task, point) {
-            point.checked = true;
+        changeStatus(note, task) {
             task.checked = true; //при нажатии должен отмечать поле checked как true
             let count = 0; //переменная для подсчёта ВСЕХ элементов
             note.status = 0; //для подсчёта отмеченных пунктов
             //цикл, который считает все пункты
-            for (let i = 0; i < 5; i++) {
-                if (note.points[i].name !== null ) {
+            for (let i = 0; i < note.points.length; i++) {
+                if (note.points[i].name !== null) {
                     count += 1;
-                }
-                ;
+                    console.log("Count +1")
+                };
             }
 
             //цикл, который считает отмеченные пункты
             for (let i = 0; i < count; i++) {
                 if (note.points[i].checked === true){
                     note.status += 1;
+                    console.log("+1");
                 }
             }
 
             //если отмеченные поделить на все пункты и умножить на 100,а это больше 50(в процентах), тогда должен запушить такую задачу во второй массив
             if (((note.status / count) * 100) >= 50 && this.inProgress.length !== 5) {
-                note.percent = (note.status / count) * 100;
                 this.inProgress.push(note) //пушит в массив второго столбца карточку, но без сохранения отметок
                 this.forBegin.splice(this.forBegin.indexOf(note), 1);//вырезает первый найденный note
             }
